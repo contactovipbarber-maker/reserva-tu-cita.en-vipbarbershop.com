@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP BARBER STORE - Premium Interface</title>
+    <style>
+        /* BASE DE DISEÑO - COLORES IDENTICOS A LAS IMAGENES */
+        :root {
+            --bg-deep-black: #0a0a0a;
+            --bg-card: #141414;
+            --gold-premium: #d4af37;
+            --gold-glow: #f3e5ab;
+            --green-active: #00b37e;
+            --text-gray: #8f8f8f;
+            --text-light: #ffffff;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', 'Segoe UI', Helvetica, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-deep-black);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hidden { display: none !important; }
+
+        /* COMPONENTES DE INTERFAZ: INPUTS Y ALERTAS */
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+            background-color: #1a1a1a;
+            color: var(--white);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--gold-premium);
+            outline: none;
+            background-color: #222;
+        }
+
+        .input-alert {
+            color: var(--gold-premium);
+            font-size: 11px;
+            font-weight: 500;
+            display: block;
+            margin-top: -4px;
+            margin-bottom: 12px;
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+
+        /* BOTONES DE ACCIÓN */
+        .btn-green-action {
+            background: linear-gradient(135deg, #00b37e 0%, #008a60 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 15px;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 179, 126, 0.2);
+        }
+
+        .btn-green-action:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 179, 126, 0.4);
+        }
+
+        .btn-green-action:disabled {
+            background: #2a2a2a;
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* VENTANAS EMERGENTES MODALES */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-content {
+            background-color: var(--bg-card);
+            border: 1px solid var(--gold-premium);
+            border-radius: 16px;
+            padding: 30px;
+            width: 92%;
+            max-width: 440px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            color: var(--text-gray);
+            font-size: 26px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: var(--white); }
+
+        /* PANTALLA DE LOGIN (IMAGEN 1) */
+        #view-login {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: linear-gradient(145deg, #121212 0%, #1c1c1c 100%);
+            padding: 45px 35px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid #222;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+
+        .brand-logo-container {
+            margin-bottom: 25px;
+        }
+
+        .brand-logo-container .logo-placeholder {
+            width: 85px;
+            height: 85px;
+            border: 2px solid var(--gold-premium);
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            color: var(--gold-premium);
+            background: #151515;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .brand-title {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--white);
+            margin-top: 10px;
+        }
+
+        .brand-title span { color: var(--gold-premium); }
+
+        .label-form {
+            text-align: left;
+            display: block;
+            font-size: 11px;
+            color: var(--gold-premium);
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-top: 18px;
+            text-transform: uppercase;
+        }
+
+        .link-gold {
+            color: var(--gold-premium);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .link-gold:hover { color: var(--gold-glow); text-decoration: underline; }
+
+        /* PANTALLA PRINCIPAL DE SERVICIOS (IMAGEN 2) */
+        #view-dashboard {
+            padding: 20px;
+            max-width: 1250px;
+            width: 100%;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .header-logo {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: var(--white);
+        }
+        .header-logo span { color: var(--gold-premium); }
+
+        .nav-right-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* MENÚ DESPLEGABLE PREMIUM */
+        .dropdown { position: relative; display: inline-block; }
+        .dropbtn {
+            background: #161616;
+            border: 1px solid #333;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .dropbtn:hover { border-color: var(--gold-premium); }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #111;
+            min-width: 180px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.8);
+            z-index: 10;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #ccc;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .dropdown-content a:hover { background-color: #1c1c1c; color: var(--gold-premium); }
+        .dropdown:hover .dropdown-content { display: block; }
+
+        .btn-cart-trigger {
+            background-color: var(--gold-premium);
+            color: black;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-cart-trigger:hover { background-color: var(--gold-glow); }
+
+        /* TÍTULOS DE SECCIONES COMPLETAMENTE CORREGIDOS */
+        .section-headline {
+            text-align: left;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 35px 0 15px;
+            padding-left: 10px;
+            border-left: 3px solid var(--gold-premium);
+            text-transform: uppercase;
+        }
+
+        /* DISEÑO DE CUADRÍCULAS */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid #1e1e1e;
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            border-color: #333;
+        }
+
+        .product-img-box {
+            width: 100%;
+            height: 160px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-gray);
+            font-size: 13px;
+            margin-bottom: 15px;
+            border: 1px solid #222;
+        }
+
+        .product-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #eaeaea;
+        }
+        .product-card p {
+            color: var(--gold-premium);
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        /* SECCIÓN DE RESERVAS CON CORRECCIÓN DE TEXTOS */
+        .booking-container {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 14px;
+            max-width: 550px;
+            margin: 0 auto;
+            border: 1px solid #1e1e1e;
+        }
+
+        .booking-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #1c1c1c;
+            font-size: 14px;
+            color: #ddd;
+        }
+        .booking-info-row:last-of-type { border-bottom: none; margin-bottom: 15px; }
+
+        /* CARRITO LATERAL (1/4 de ancho exacto, fondo negro, bordes dorados largo) */
+        #cart-sidebar {
+            position: fixed;
+            top: 0; right: 0;
+            width: 25vw;
+            min-width: 320px;
+            height: 100%;
+            background-color: #000000;
+            border-left: 2px solid var(--gold-premium);
+            z-index: 2500;
+            padding: 30px 25px;
+            box-shadow: -10px 0 35px rgba(0,0,0,0.85);
+            display: flex;
+            flex-direction: column;
+            animation: slideLeft 0.3s ease-out;
+        }
+
+        .cart-title-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+        }
+        .cart-title-area h3 { font-size: 16px; letter-spacing: 1px; color: var(--white); }
+
+        .cart-scrollable-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .cart-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0d0d0d;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #1a1a1a;
+        }
+
+        .qty-input-controls button {
+            background: #222;
+            border: none;
+            color: white;
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .qty-input-controls input {
+            width: 40px;
+            padding: 3px;
+            text-align: center;
+            margin: 0 4px;
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            border: 1px solid #333;
+        }
+
+        /* CONTENEDOR MODAL QR */
+        .qr-render-container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px auto;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .qr-render-container img { width: 100%; height: 100%; object-fit: contain; }
+        .qr-holder-name { font-size: 14px; font-weight: 700; color: #111; margin-top: 10px; }
+
+        /* ANIMACIONES CSS */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideLeft { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        @media (max-width: 768px) {
+            #cart-sidebar { width: 85vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="view-login">
+        <div class="login-card">
+            <div class="brand-logo-container">
+                <div class="logo-placeholder">✂</div>
+                <h2 class="brand-title">VIP BARBER<span>STORE</span></h2>
+            </div>
+            
+            <form id="main-login-form" onsubmit="event.preventDefault(); ejecutarInicioSesion();">
+                <label class="label-form">Usuario</label>
+                <input type="text" id="log-user" placeholder="Ingrese su usuario telefónico" required oninput="limitarSoloNumeros(this)">
+                <small class="input-alert">* Solo se permiten números</small>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                    <label class="label-form" style="margin-top:0;">Contraseña</label>
+                    <a class="link-gold" onclick="abrirFlujoRecuperacion()">¿Olvidaste tu contraseña?</a>
+                </div>
+                <input type="password" id="log-pass" placeholder="••••••••••••" required>
+
+                <button type="submit" class="btn-green-action" style="margin-top:25px;">Iniciar Sesión</button>
+            </form>
+
+            <div style="margin-top: 35px; border-top: 1px solid #222; padding-top: 20px;">
+                <p style="font-size:13px; color:var(--text-gray); margin-bottom:8px;">¿No dispones de una cuenta?</p>
+                <a class="link-gold" style="font-size:15px; font-weight:700;" onclick="abrirVentanaRegistro()">Crear mi Cuenta</a>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="view-dashboard" class="hidden">
+        <header>
+            <div class="header-logo">VIP BARBER <span>STORE</span></div>
+            <div class="nav-right-group">
+                <div class="dropdown">
+                    <button class="dropbtn">Mi Perfil ▼</button>
+                    <div class="dropdown-content">
+                        <a onclick="desplegarModalPerfil()">Ver Perfil</a>
+                        <a onclick="desplegarModalPuntos()">Mis Puntos</a>
+                        <a onclick="cerrarSesionPlataforma()">Cerrar Sesión</a>
+                    </div>
+                </div>
+                <button class="btn-cart-trigger" onclick="toggleVisibilidadCarrito(true)">🛒 Carrito (<span id="lbl-badge-count">0</span>)</button>
+            </div>
+        </header>
+
+        <h3 class="section-headline">Nuestros Servicios</h3>
+        <div class="cards-grid">
+            <div class="product-card">
+                <div class="product-img-box">[ Logo VIP Barber ]</div>
+                <h4>DEGRADADO</h4>
+            </div>
+            <div class="product-card">
+                <div class="product-img-box">[ Logo VIP Barber ]</div>
+                <h4>BARBA</h4>
+            </div>
+            <div class="product-card">
+                <div class="product-img-box">[ Logo VIP Barber ]</div>
+                <h4>LIMPIEZA FACIAL</h4>
+            </div>
+        </div>
+
+        <h3 class="section-headline">Fecha de Reserva</h3>
+        <div class="booking-container">
+            <div class="booking-info-row"><span>Lunes a Sábado</span><span>09:00 AM - 09:00 PM</span></div>
+            <div class="booking-info-row"><span>Domingo</span><span>09:00 AM - 08:00 PM</span></div>
+            
+            <label class="label-form" style="color:var(--white); margin-bottom:5px;">Seleccione Fecha de Cita</label>
+            <input type="date" id="booking-date-input" onchange="evaluarFechaReserva()">
+
+            <div style="display:flex; gap:12px; margin-top:20px;">
+                <button id="action-btn-asistencia" class="btn-green-action" disabled onclick="enviarReservaWhatsapp('Asistencia Presencial')">Confirmar Asistencia</button>
+                <button id="action-btn-domicilio" class="btn-green-action" style="background:#333; box-shadow:none;" disabled onclick="enviarReservaWhatsapp('Servicio a Domicilio')">Domicilio</button>
+            </div>
+        </div>
+
+        <h3 class="section-headline">VIP Barber Store</h3>
+        <div class="cards-grid">
+            <div class="product-card">
+                <div class="product-img-box">[ Cera Telaraña ]</div>
+                <h4>Cera Telaraña Bandido</h4>
+                <p>S/ 35.00</p>
+                <button class="btn-cart-trigger" style="width:100%" onclick="agregarItemAlCarrito('Cera Telaraña Bandido', 35.00)">Agregar al Carrito</button>
+            </div>
+            <div class="product-card">
+                <div class="product-img-box">[ After Shave ]</div>
+                <h4>After Shave</h4>
+                <p>S/ 45.00</p>
+                <button class="btn-cart-trigger" style="width:100%" onclick="agregarItemAlCarrito('After Shave', 45.00)">Agregar al Carrito</button>
+            </div>
+            <div class="product-card">
+                <div class="product-img-box">[ Shaving Gel ]</div>
+                <h4>Shaving Gel Bandido</h4>
+                <p>S/ 50.00</p>
+                <button class="btn-cart-trigger" style="width:100%" onclick="agregarItemAlCarrito('Shaving Gel Bandido', 50.00)">Agregar al Carrito</button>
+            </div>
+            <div class="product-card">
+                <div class="product-img-box">[ Rolda Gel ]</div>
+                <h4>Rolda Gel Morado</h4>
+                <p>S/ 59.00</p>
+                <button class="btn-cart-trigger" style="width:100%" onclick="agregarItemAlCarrito('Rolda Gel Morado', 59.00)">Agregar al Carrito</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="cart-sidebar" class="hidden">
+        <div class="cart-title-area">
+            <h3>PRODUCTOS SELECCIONADOS</h3>
+            <span class="close-modal" onclick="toggleVisibilidadCarrito(false)">×</span>
+        </div>
+        <div class="cart-scrollable-items" id="wrapper-cart-items">
+            </div>
+        <div style="margin-top:20px;">
+            <button id="btn-submit-cart-total" class="btn-green-action" onclick="desplegarVentanaMetodosPago()">Confirmar S/ 0.00</button>
+        </div>
+    </div>
+
+
+    <div id="md-forget-step1" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="ocultarTodosLosModales()">×</span>
+            <h3 style="color:var(--gold-premium); margin-bottom:10px;">Recuperar Acceso</h3>
+            <label class="label-form">Escriba su Usuario (Número)</label>
+            <input type="text" id="pwd-search-user" oninput="limitarSoloNumeros(this); chequearInputRecuperar();">
+            <button id="btn-forget-next" class="btn-green-action" style="margin-top:20px;" disabled onclick="pasarPasoCodigoVerificacion()">Enviar</button>
+        </div>
+    </div>
+
+    <div id="md-forget-step2" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="ocultarTodosLosModales()">×</span>
+            <h3 style="color:var(--gold-premium); margin-bottom:10px;">Código de Verificación</h3>
+            <p style="font-size:13px; color:var(--text-gray); margin-bottom:15px;">Ingrese el código de 4 dígitos enviado automáticamente.</p>
+            <input type="text" id="pwd-code-input" maxlength="4" placeholder="0000" style="text-align:center; font-size:20px; letter-spacing:5px;" oninput="limitarSoloNumeros(this); chequearInputCodigo();">
+            <button id="btn-forget-confirm" class="btn-green-action" style="margin-top:20px;" disabled onclick="finalizarFlujoRecuperacion()">Confirmar</button>
+        </div>
+    </div>
+
+    <div id="md-browser-save-prompt" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="font-size:16px; margin-bottom:20px;">¿Quiere guardar el usuario y contraseña generada en este dispositivo?</h3>
+            <div style="display:flex; gap:12px;">
+                <button class="btn-green-action" onclick="responderPromptGuardado(true)">Guardar</button>
+                <button class="btn-green-action" style="background:#333; box-shadow:none;" onclick="responderPromptGuardado(false)">Ahora no</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="md-user-register" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width:480px; max-height:90vh; overflow-y:auto;">
+            <span class="close-modal" onclick="ocultarTodosLosModales()">×</span>
+            <h3 style="color:var(--gold-premium); margin-bottom:15px;">Registro Cuenta Premium</h3>
+            <form id="form-register-fields" onsubmit="event.preventDefault(); registrarNuevoUsuario();">
+                <input type="text" id="reg-name" placeholder="Nombre" required>
+                <input type="text" id="reg-lastname" placeholder="Apellido" required>
+                
+                <input type="text" id="reg-username" placeholder="Usuario (Número de Celular)" required oninput="limitarSoloNumeros(this)">
+                <small class="input-alert">* El usuario debe contener solo números</small>
+
+                <input type="text" id="reg-document" placeholder="DNI / CE" required>
+                <input type="tel" id="reg-phone" placeholder="Teléfono" required>
+                <input type="email" id="reg-mail" placeholder="Correo Electrónico" required>
+                <input type="password" id="reg-password" placeholder="Establecer Contraseña" required>
+
+                <button type="submit" class="btn-green-action" style="margin-top:20px;">Confirmar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="md-payment-gateways" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="ocultarTodosLosModales()">×</span>
+            <h3 style="color:var(--gold-premium); margin-bottom:20px;">Método de Pago</h3>
+            
+            <div class="product-card" style="padding:14px; margin-bottom:12px; cursor:pointer; flex-direction:row; align-items:center; justify-content:center; gap:10px;" onclick="registrarClickMetodo('yape')">
+                <strong style="font-size:16px;">Yape</strong>
+            </div>
+
+            <div class="product-card" style="padding:14px; margin-bottom:12px; cursor:pointer; flex-direction:column; align-items:center; justify-content:center;" onclick="window.open('https://link.mercadopago.com.pe/vipbarberstore', '_blank')">
+                <strong style="font-size:16px;">Tarjeta Débito / Crédito</strong>
+                <small style="color:var(--text-gray); font-size:11px; margin-top:2px;">Pago en línea vía Mercado Pago</small>
+            </div>
+
+            <div class="product-card" style="padding:14px; margin-bottom:12px; cursor:pointer; flex-direction:row; align-items:center; justify-content:center; gap:10px;" onclick="registrarClickMetodo('efectivo')">
+                <strong style="font-size:16px;">Pago Efectivo</strong>
+            </div>
+
+            <div id="panel-qr-desplegable" class="hidden" style="margin-top:15px; border-top:1px solid #222; padding-top:15px;">
+                <div class="qr-render-container">
+                    <div style="font-size:11px; color:#666; font-weight:800; margin-bottom:4px;">[ QR VIP BARBER ]</div>
+                    <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='150' height='150' fill='%23cccccc'/><text x='50%2s' y='50%2s' dom-align='center' fill='black'>Código QR</text></svg>" alt="QR Code">
+                    <div class="qr-holder-name" id="lbl-qr-holder">SEBASTIAN ANDRE PRADO COTRINA</div>
+                </div>
+
+                <label class="label-form" style="color:var(--white); margin-bottom:8px;">Adjuntar Comprobante (Captura de Pago)</label>
+                <input type="file" id="file-payment-screenshot" accept="image/*" style="background:#111; color:white; font-size:12px;">
+
+                <button class="btn-green-action" style="margin-top:15px;" onclick="enviarProcesoWhatsAppFinal()">Confirmar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="md-view-profile" class="modal-overlay hidden">
+        <div class="modal-content" style="text-align:left;">
+            <span class="close-modal" onclick="ocultarTodosLosModales()">×</span>
+            <h3 style="color:var(--gold-premium); border-bottom:1px solid #222; padding-bottom:10px; text-align:center;">👑 Perfil Premium</h3>
+            <div id="profile-inner-data" style="margin-top:15px; font-size:14px; line-height:2;">
+                </div>
+        </div>
+    </div>
+
+    <div id="md-view-points" class="modal-overlay hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="ocultarTodosLosModales()">×</span>
+            <h3 style="color:var(--gold-premium);">Mis Puntos</h3>
+            <div id="lbl-calculated-points" style="font-size:55px; font-weight:900; color:var(--green-active); margin:15px 0;">0</div>
+            <p style="font-size:13px; color:var(--text-gray);">Tus puntos acumulados se calculan y actualizan automáticamente según la cantidad total de tus compras concretadas.</p>
+        </div>
+    </div>
+
+
+    <script>
+        // Inicialización de la Base de Datos Local del Sistema
+        if (!localStorage.getItem('sys_barber_users')) {
+            localStorage.setItem('sys_barber_users', JSON.stringify({}));
+        }
+
+        let sesionUsuarioActiva = null;
+        let carritoDeCompras = [];
+        let montoHistoricoCompras = parseFloat(localStorage.getItem('sys_barber_total_score')) || 0;
+
+        // Variables de conteo de clicks solicitados para los métodos de pago
+        let contadorClicksYape = 0;
+        let contadorClicksEfectivo = 0;
+
+        // Validaciones en caliente
+        function limitarSoloNumeros(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
+        function chequearInputRecuperar() {
+            const txt = document.getElementById('pwd-search-user').value;
+            document.getElementById('btn-forget-next').disabled = (txt.trim() === "");
+        }
+
+        function chequearInputCodigo() {
+            const txt = document.getElementById('pwd-code-input').value;
+            document.getElementById('btn-forget-confirm').disabled = (txt.length !== 4);
+        }
+
+        // Gestión de modales y flujos de recuperación
+        function abrirFlujoRecuperacion() {
+            document.getElementById('md-forget-step1').classList.remove('hidden');
+        }
+
+        function pasarPasoCodigoVerificacion() {
+            document.getElementById('md-forget-step1').classList.add('hidden');
+            document.getElementById('md-forget-step2').classList.remove('hidden');
+        }
+
+        function finalizarFlujoRecuperacion() {
+            ocultarTodosLosModales();
+            alert("Código de 4 dígitos confirmado. Redirigiendo a pantalla principal.");
+        }
+
+        function abrirVentanaRegistro() {
+            document.getElementById('md-user-register').classList.remove('hidden');
+        }
+
+        function ocultarTodosLosModales() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add('hidden'));
+        }
+
+        // Registros y persistencia de cuentas sin borrado
+        function registrarNuevoUsuario() {
+            const nombre = document.getElementById('reg-name').value;
+            const apellido = document.getElementById('reg-lastname').value;
+            const usuario = document.getElementById('reg-username').value;
+            const dni = document.getElementById('reg-document').value;
+            const telf = document.getElementById('reg-phone').value;
+            const correo = document.getElementById('reg-mail').value;
+            const pass = document.getElementById('reg-password').value;
+
+            let baseUsuarios = JSON.parse(localStorage.getItem('sys_barber_users'));
+            baseUsuarios[usuario] = { nombre, apellido, usuario, dni, telf, correo, pass };
+            localStorage.setItem('sys_barber_users', JSON.stringify(baseUsuarios));
+
+            alert("¡Cuenta Premium creada con éxito!");
+            document.getElementById('form-register-fields').reset();
+            ocultarTodosLosModales();
+
+            // Auto-rellenar para simular guardado de credenciales
+            document.getElementById('log-user').value = usuario;
+            document.getElementById('md-browser-save-prompt').classList.remove('hidden');
+        }
+
+        function responderPromptGuardado(aceptar) {
+            document.getElementById('md-browser-save-prompt').classList.add('hidden');
+            if (aceptar) {
+                alert("Usuario y contraseña sincronizados en el sistema local.");
+            }
+        }
+
+        function ejecutarInicioSesion() {
+            const user = document.getElementById('log-user').value;
+            const pass = document.getElementById('log-pass').value;
+            const baseUsuarios = JSON.parse(localStorage.getItem('sys_barber_users'));
+
+            if (baseUsuarios[user] && baseUsuarios[user].pass === pass) {
+                sesionUsuarioActiva = baseUsuarios[user];
+                document.getElementById('view-login').classList.add('hidden');
+                document.getElementById('view-dashboard').classList.remove('hidden');
+                sincronizarVistaCarrito();
+            } else {
+                alert("Los datos ingresados no coinciden con ninguna cuenta Premium registrada.");
+            }
+        }
+
+        function cerrarSesionPlataforma() {
+            sesionUsuarioActiva = null;
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+            document.getElementById('log-pass').value = "";
+        }
+
+        // Sistema de Citas y Reservas sin precios añadidos
+        function evaluarFechaReserva() {
+            const fechaSeleccionada = document.getElementById('booking-date-input').value;
+            if (fechaSeleccionada) {
+                document.getElementById('action-btn-asistencia').disabled = false;
+                document.getElementById('action-btn-domicilio').disabled = false;
+            }
+        }
+
+        function enviarReservaWhatsapp(modalidad) {
+            const fecha = document.getElementById('booking-date-input').value;
+            const enlace = `https://wa.me/message/HSE2KYPTYVRNF1?text=Hola%20VIP%20BARBER,%20deseo%20confirmar%20mi%20fecha%20de%20reserva%20para%20el%20día%20${fecha}%20en%20la%20modalidad:%20${modalidad}.`;
+            window.open(enlace, '_blank');
+        }
+
+        // Gestión Funcional del Carrito de Compras
+        function toggleVisibilidadCarrito(mostrar) {
+            const sidebar = document.getElementById('cart-sidebar');
+            if (mostrar) sidebar.classList.remove('hidden');
+            else sidebar.classList.add('hidden');
+        }
+
+        function agregarItemAlCarrito(nombre, precio) {
+            const itemYaAgregado = carritoDeCompras.find(i => i.nombre === nombre);
+            if (itemYaAgregado) {
+                itemYaAgregado.cantidad++;
+            } else {
+                carritoDeCompras.push({ nombre, precio, cantidad: 1 });
+            }
+            sincronizarVistaCarrito();
+        }
+
+        function ajustarUnidadesItem(nombre, factor) {
+            const item = carritoDeCompras.find(i => i.nombre === nombre);
+            if (item) {
+                item.cantidad += factor;
+                if (item.cantidad <= 0) {
+                    carritoDeCompras = carritoDeCompras.filter(i => i.nombre !== nombre);
+                }
+            }
+            sincronizarVistaCarrito();
+        }
+
+        function sincronizarVistaCarrito() {
+            const contenedor = document.getElementById('wrapper-cart-items');
+            contenedor.innerHTML = "";
+            let totalAcumulado = 0;
+            let totalUnidades = 0;
+
+            carritoDeCompras.forEach(item => {
+                totalAcumulado += item.precio * item.cantidad;
+                totalUnidades += item.cantidad;
+
+                contenedor.innerHTML += `
+                    <div class="cart-item-row">
+                        <div>
+                            <div style="font-size:13px; font-weight:700; color:white;">${item.nombre}</div>
+                            <div style="color:var(--gold-premium); font-size:12px; margin-top:2px;">S/ ${(item.precio * item.cantidad).toFixed(2)}</div>
+                        </div>
+                        <div class="qty-input-controls">
+                            <button onclick="ajustarUnidadesItem('${item.nombre}', -1)">-</button>
+                            <input type="text" value="${item.cantidad}" readonly>
+                            <button onclick="ajustarUnidadesItem('${item.nombre}', 1)">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('lbl-badge-count').innerText = totalUnidades;
+            document.getElementById('btn-submit-cart-total').innerText = `Confirmar S/ ${totalAcumulado.toFixed(2)}`;
+        }
+
+        // Lógica de clics en Métodos de Pago
+        function desplegarVentanaMetodosPago() {
+            if (carritoDeCompras.length === 0) {
+                alert("Debe agregar al menos un producto al carrito.");
+                return;
+            }
+            contadorClicksYape = 0;
+            contadorClicksEfectivo = 0;
+            document.getElementById('panel-qr-desplegable').classList.add('hidden');
+            document.getElementById('md-payment-gateways').classList.remove('hidden');
+        }
+
+        function registrarClickMetodo(metodo) {
+            const panelQr = document.getElementById('panel-qr-desplegable');
+            const tituloQr = document.getElementById('lbl-qr-holder');
+
+            if (metodo === 'yape') {
+                contadorClicksYape++;
+                contadorClicksEfectivo = 0; // reset
+                if (contadorClicksYape >= 2) {
+                    panelQr.classList.add('hidden');
+                    contadorClicksYape = 0;
+                } else {
+                    tituloQr.innerText = "YAPE: SEBASTIAN ANDRE PRADO COTRINA";
+                    panelQr.classList.remove('hidden');
+                }
+            } else if (metodo === 'efectivo') {
+                contadorClicksEfectivo++;
+                contadorClicksYape = 0; // reset
+                if (contadorClicksEfectivo >= 2) {
+                    panelQr.classList.add('hidden');
+                    contadorClicksEfectivo = 0;
+                } else {
+                    tituloQr.innerText = "PAGO EFECTIVO: SEBASTIAN ANDRE PRADO COTRINA";
+                    panelQr.classList.remove('hidden');
+                }
+            }
+        }
+
+        function enviarProcesoWhatsAppFinal() {
+            let total = 0;
+            let listaProductosTexto = "";
+            
+            carritoDeCompras.forEach(i => {
+                total += i.precio * i.cantidad;
+                listaProductosTexto += `-%20${i.nombre}%20(Cantidad:%20${i.cantidad})%0A`;
+            });
+
+            // Suma automática del puntaje basado en la compra
+            montoHistoricoCompras += total;
+            localStorage.setItem('sys_barber_total_score', montoHistoricoCompras);
+
+            // Reseteo del estado del carrito
+            carritoDeCompras = [];
+            sincronizarVistaCarrito();
+            ocultarTodosLosModales();
+            toggleVisibilidadCarrito(false);
+
+            // Lanzamiento estructurado hacia WhatsApp para enviar el comprobante
+            const mensajeFinal = `Hola%20VIP%20BARBER,%20aquí%20tengo%20mi%20comprobante%20de%20pago%20adjunto.%0A%0A*Detalle%20de%20Orden*:%0A${listaProductosTexto}%0A*Monto%20Total*:%20S/%20${total.toFixed(2)}%0A%0Anos%20pondré%20en%20contacto.`;
+            window.open(`https://wa.me/message/HSE2KYPTYVRNF1?text=${mensajeFinal}`, '_blank');
+        }
+
+        // Datos dinámicos de Perfil y Puntos acumulados
+        function desplegarModalPerfil() {
+            if (!sesionUsuarioActiva) return;
+            const caja = document.getElementById('profile-inner-data');
+            caja.innerHTML = `
+                <p><strong>Nombre:</strong> ${sesionUsuarioActiva.nombre}</p>
+                <p><strong>Apellido:</strong> ${sesionUsuarioActiva.apellido}</p>
+                <p><strong>Usuario Único:</strong> ${sesionUsuarioActiva.usuario}</p>
+                <p><strong>DNI / CE:</strong> ${sesionUsuarioActiva.dni}</p>
+                <p><strong>Teléfono:</strong> ${sesionUsuarioActiva.telf}</p>
+                <p><strong>Correo Electrónico:</strong> ${sesionUsuarioActiva.correo}</p>
+            `;
+            document.getElementById('md-view-profile').classList.remove('hidden');
+        }
+
+        function desplegarModalPuntos() {
+            // Conversión directa: 1 sol gastado = 1 punto Premium ganado
+            const puntosTotales = Math.floor(montoHistoricoCompras);
+            document.getElementById('lbl-calculated-points').innerText = puntosTotales;
+            document.getElementById('md-view-points').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
